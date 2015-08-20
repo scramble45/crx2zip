@@ -1,6 +1,6 @@
 #!/bin/bash
-# Convert Chromium .CRX file to .ZIP, v1.0
-# Rowan H - 8/19/2015
+# Convert Chromium .CRX file to .ZIP, v1.1
+# Rowan H - 8/20/2015
 
 # This is a simple one shot bash script that uses: hexdump, sed and dd to
 # create a .ZIP archive from a .CRX file
@@ -9,35 +9,15 @@
 # the creation using *dd* may fail.
 
 
-function checkDep-HexDump(){
-if [ $(dpkg-query -W -f='${Status}' bsdmainutils 2>/dev/null | grep -c "ok installed") -eq 0 ];
-then
-	echo 'It appears you are missing *hexdump* which is required. (Please compile it or install via apt-get)'
-  	sudo apt-get install bsdmainutils;
-fi
+function checkDeps(){
+echo "Checking for required programs for script to work..."
+type hexdump sed  >/dev/null || echo "Your missing a dependency, make sure you have *sed* and *hexdump* installed."
 }
 
-function checkDep-sed()
-if [ $(dpkg-query -W -f='${Status}' sed 2>/dev/null | grep -c "ok installed") -eq 0 ];
-then
-	echo 'It appears you are missing *sed* which is required. (Please compile it or install via apt-get)'
-  	sudo apt-get install sed;
-fi
-
-function checkDep-dd()
-if [ $(dpkg-query -W -f='${Status}' coreutils 2>/dev/null | grep -c "ok installed") -eq 0 ];
-then
-	echo 'It appears you are missing *dd* which is required. (Please compile it or install via apt-get)'
-  	sudo apt-get install coreutils;
-fi
+checkDeps
 
 
-echo 'Checking for required packages for script to work...'
-checkDep-HexDump
-checkDep-sed
-
-
-reset
+clear
 
 RED='\033[0;31m'
 echo
@@ -60,5 +40,6 @@ echo "Exporting our patched ZIP file to '.' "
 dd if=$crxPath of=$zipContainerName.zip bs=1 skip=$getPK
 echo
 echo
-echo 'You can now decompress your ZIP archive...'
-exit 1
+echo "You can now decompress your ZIP archive..."
+
+exit
